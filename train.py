@@ -73,7 +73,7 @@ if __name__ == "__main__":
     args.root_path = dataset_config[dataset_name]['root_path']
     args.list_dir = dataset_config[dataset_name]['list_dir']
     args.is_pretrain = False
-    args.is_chkpnt = True
+    args.is_chkpnt = False
     args.exp = 'TU_' + dataset_name + str(args.img_size)
     snapshot_path = "../model/{}/{}".format(args.exp, 'TU')
     snapshot_path = snapshot_path + '_pretrain' if args.is_pretrain else snapshot_path
