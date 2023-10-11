@@ -45,7 +45,9 @@ def BCELoss_class_weighted():
             target = _one_hot_encoder(target)
             weights = torch.unsqueeze(weights,axis=2)
             weights = torch.unsqueeze(weights,axis=3)
+            print("before tile: ", weights.shape)
             weights = torch.tile(weights,(1,1,inpt.shape[-2],inpt.shape[-1]))
+            print("after tile: ", weights.shape)
             bce = - weights[:,0,:,:] * target[:,1,:,:] * torch.log(inpt[:,1,:,:]) - (target[:,0,:,:]) * weights[:,1,:,:] * torch.log(inpt[:,0,:,:])
             return torch.mean(bce)
     return loss
