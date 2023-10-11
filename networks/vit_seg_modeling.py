@@ -99,7 +99,6 @@ class Attention(nn.Module):
             query_mask2,key_mask2 = self.cross_image_selective_attention_mask(query_layer,1)
             query_mask3,key_mask3 = self.cross_image_selective_attention_mask(query_layer,2)
             query_mask4,key_mask4 = self.cross_image_selective_attention_mask(query_layer,3)
-            print("inside sleective attention")
             query_layer_1 = query_layer * query_mask1
             key_layer_1 = key_layer * key_mask1
             query_layer_2 = query_layer * query_mask2
