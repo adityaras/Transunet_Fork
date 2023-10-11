@@ -53,6 +53,8 @@ parser.add_argument('--model_path', type=str,
                     default="", help='path to pretrained model')
 parser.add_argument('--selective-attention', dest='selective_attention', action='store_true',
                     help='Using selective attention')
+parser.add_argument('--alpha_coeff', type=float,  default=1,
+                    help='segmentation network learning rate')
 args = parser.parse_args()
 
 
