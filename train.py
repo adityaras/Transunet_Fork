@@ -45,6 +45,14 @@ parser.add_argument('--dice_flag', dest='dice_flag', action='store_true',
                     help='Using Dice loss')
 parser.add_argument('--double_channel', dest='double_channel', action='store_true',
                     help='Using 2 channel')
+parser.add_argument('--is_pretrain', dest='is_pretrain', action='store_true',
+                    help='Using pretrained model')
+parser.add_argument('--epochs_till_now', type=int,
+                    default=0, help='epochs to start at if pretraining')
+parser.add_argument('--model_path', type=str,
+                    default="", help='path to pretrained model')
+parser.add_argument('--selective-attention', dest='selective_attention', action='store_true',
+                    help='Using selective attention')
 args = parser.parse_args()
 
 
@@ -98,16 +106,14 @@ if __name__ == "__main__":
     config_vit = CONFIGS_ViT_seg[args.vit_name]
     config_vit.n_classes = args.num_classes
     config_vit.n_skip = args.n_skip
+    config_vit.selective_attention = args.selective_attention
     if args.vit_name.find('R50') != -1:
         config_vit.patches.grid = (int(
             args.img_size / args.vit_patches_size), int(args.img_size / args.vit_patches_size))
     net = ViT_seg(config_vit, img_size=args.img_size,
                   num_classes=config_vit.n_classes).cuda()
     if args.is_pretrain:
-        net.load_from(weights=np.load(config_vit.pretrained_path))
-    if args.is_chkpnt:
-        # net.load_from(weights=np.load(args.load_checkpoint_path))
-        net.load_state_dict(torch.load(args.load_checkpoint_path))
+        net.load_state_dict(torch.load(args.model_path))
 
     trainer = {args.dataset: trainer_synapse, }
     trainer[dataset_name](args, net, snapshot_path)
