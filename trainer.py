@@ -50,7 +50,7 @@ def BCELoss_class_weighted():
             return torch.mean(bce)
     return loss
 
-def Patch_MSE_Loss():
+class Patch_MSE_Loss():
     
     def _one_hot_encoder(input_tensor):
         tensor_list = []
