@@ -50,10 +50,12 @@ def BCELoss_class_weighted():
             return torch.mean(bce)
     return loss
 
-# def patch_mse_loss(inpt, target):
-#     base_shape = inpt.shape
-#     height = base_shape[-2]
-#     width = base_shape[-1]
+def patch_mse_loss(output, target):
+    output = torch.softmax(output,1)
+    base_shape = output.shape
+    height = base_shape[-2]
+    width = base_shape[-1]
+    print(output.shape,target.shape)
     
 
 
@@ -104,7 +106,7 @@ def trainer_synapse(args, model, snapshot_path):
 #             print(outputs.shape,label_batch[:].long().shape,weights,label_batch.shape)
 #             print(weights.shape)
 #             exit()
-            
+            patch_mse_loss(output,label_batch)
             if args.dice_flag:
                 label_batch = label_batch.squeeze()
                 loss_dice = dice_loss(outputs, label_batch, softmax=True)
