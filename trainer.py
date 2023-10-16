@@ -23,11 +23,11 @@ def BCELoss_class_weighted():
         tensor_list = []
         for i in range(2):
             temp_prob = input_tensor == i  # * torch.ones_like(input_tensor)
-            print(temp_prob.shape)
+            print("in BCELoss_class_weighted: ",temp_prob.shape)
             tensor_list.append(temp_prob.unsqueeze(1))
             
         output_tensor = torch.cat(tensor_list, dim=1)
-        print(output_tensor.shape)
+        print("in BCELoss_class_weighted: ", output_tensor.shape)
         return output_tensor.float()
 
     def loss(inpt, target,weights,dc):
@@ -59,8 +59,11 @@ class Patch_MSE_Loss():
         tensor_list = []
         for i in range(2):
             temp_prob = input_tensor == i  # * torch.ones_like(input_tensor)
+            print("in patch: ",temp_prob.shape)
             tensor_list.append(temp_prob.unsqueeze(1))
+            
         output_tensor = torch.cat(tensor_list, dim=1)
+        print("in patch: ", output_tensor.shape)
         return output_tensor.float()
         
     def loss(self, output, target):
