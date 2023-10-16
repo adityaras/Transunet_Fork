@@ -23,7 +23,9 @@ def BCELoss_class_weighted():
         tensor_list = []
         for i in range(2):
             temp_prob = input_tensor == i  # * torch.ones_like(input_tensor)
+            print(temp_prob.shape)
             tensor_list.append(temp_prob.unsqueeze(1))
+            print(temp_prob.shape)
         output_tensor = torch.cat(tensor_list, dim=1)
         return output_tensor.float()
 
@@ -127,8 +129,7 @@ def trainer_synapse(args, model, snapshot_path):
 #             print(weights.shape)
 #             exit()
             loss = 0
-            if args.patch_mse_loss:
-                loss += args.gamma_coeff * patch_mse_loss.loss(outputs, label_batch)
+
             if args.dice_flag:
                 label_batch = label_batch.squeeze()
                 loss_dice = dice_loss(outputs, label_batch, softmax=True)
@@ -138,7 +139,8 @@ def trainer_synapse(args, model, snapshot_path):
             else:
                 loss_ce = ce_loss(outputs.squeeze(1), label_batch.squeeze(1)[:].long(),weights,args.double_channel)
                 loss += loss_ce
-
+            if args.patch_mse_loss:
+                loss += args.gamma_coeff * patch_mse_loss.loss(outputs, label_batch)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
