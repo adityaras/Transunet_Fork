@@ -25,8 +25,9 @@ def BCELoss_class_weighted():
             temp_prob = input_tensor == i  # * torch.ones_like(input_tensor)
             print(temp_prob.shape)
             tensor_list.append(temp_prob.unsqueeze(1))
-            print(temp_prob.shape)
+            
         output_tensor = torch.cat(tensor_list, dim=1)
+        print(output_tensor.shape)
         return output_tensor.float()
 
     def loss(inpt, target,weights,dc):
