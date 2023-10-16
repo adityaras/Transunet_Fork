@@ -85,7 +85,7 @@ def trainer_synapse(args, model, snapshot_path):
     max_iterations = args.max_epochs * len(trainloader)  # max_epoch = max_iterations // len(trainloader) + 1
     print("{} iterations per epoch. {} max iterations ".format(len(trainloader), max_iterations))
     best_performance = 0.0
-    iterator = tqdm(range(max_epoch), ncols=70)
+    iterator = tqdm(range(args.epochs_till_now,max_epoch), ncols=70)
     for epoch_num in iterator:
         for i_batch, sampled_batch in enumerate(trainloader):
             image_batch, label_batch,weights,_ = sampled_batch[0], sampled_batch[1],sampled_batch[2],sampled_batch[3]
