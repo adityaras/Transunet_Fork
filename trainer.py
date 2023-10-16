@@ -60,7 +60,7 @@ class Patch_MSE_Loss():
         output_tensor = torch.cat(tensor_list, dim=1)
         return output_tensor.float()
         
-    def loss(output, target):
+    def loss(self, output, target):
         mseLoss = nn.MSELoss()
         target = self._one_hot_encoder(target)
         print("in mse loss: ", output.shape, target.shape)
