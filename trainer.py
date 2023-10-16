@@ -126,18 +126,19 @@ def trainer_synapse(args, model, snapshot_path):
 #             print(outputs.shape,label_batch[:].long().shape,weights,label_batch.shape)
 #             print(weights.shape)
 #             exit()
-            
+            loss = 0
+            if args.patch_mse_loss:
+                loss += args.gamma_coeff * patch_mse_loss.loss(outputs, label_batch)
             if args.dice_flag:
                 label_batch = label_batch.squeeze()
                 loss_dice = dice_loss(outputs, label_batch, softmax=True)
 #                 print(loss_dice)
                 loss_ce = ce_loss(outputs, label_batch.long(),weights,args.double_channel)
-                loss = loss_ce + args.alpha_coeff * loss_dice
+                loss += loss_ce + args.alpha_coeff * loss_dice
             else:
                 loss_ce = ce_loss(outputs.squeeze(1), label_batch.squeeze(1)[:].long(),weights,args.double_channel)
-                loss = loss_ce
-            if args.patch_mse_loss:
-                loss += args.gamma_coeff * patch_mse_loss.loss(outputs, label_batch)
+                loss += loss_ce
+
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
