@@ -31,6 +31,7 @@ def BCELoss_class_weighted():
         return output_tensor.float()
 
     def loss(inpt, target,weights,dc):
+        print(output.shape,target.shape)
         if not dc:
             inpt = torch.clamp(inpt,min=1e-7,max=1-1e-7)
             inpt = inpt.squeeze()
@@ -68,6 +69,7 @@ class Patch_MSE_Loss():
         
     def loss(self, output, target):
         mseLoss = nn.MSELoss()
+        print(output.shape,target.shape)
         target = self._one_hot_encoder(target)
         print("in mse loss: ", output.shape, target.shape)
         base_shape = target.shape
