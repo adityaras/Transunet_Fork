@@ -52,7 +52,7 @@ def BCELoss_class_weighted():
 
 class Patch_MSE_Loss():
     
-    def _one_hot_encoder(input_tensor):
+    def _one_hot_encoder(self, input_tensor):
         tensor_list = []
         for i in range(2):
             temp_prob = input_tensor == i  # * torch.ones_like(input_tensor)
@@ -62,7 +62,7 @@ class Patch_MSE_Loss():
         
     def loss(output, target):
         mseLoss = nn.MSELoss()
-        target = _one_hot_encoder(target)
+        target = self._one_hot_encoder(target)
         print("in mse loss: ", output.shape, target.shape)
         base_shape = target.shape
         height = base_shape[-2]
@@ -137,7 +137,7 @@ def trainer_synapse(args, model, snapshot_path):
                 loss_ce = ce_loss(outputs.squeeze(1), label_batch.squeeze(1)[:].long(),weights,args.double_channel)
                 loss = loss_ce
             if args.patch_mse_loss:
-                loss += args.gamma_coeff * patch_mse_loss(outputs, label_batch)
+                loss += args.gamma_coeff * patch_mse_loss.loss(outputs, label_batch)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
