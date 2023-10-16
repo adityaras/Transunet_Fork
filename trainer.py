@@ -137,7 +137,7 @@ def trainer_synapse(args, model, snapshot_path):
                 loss_ce = ce_loss(outputs.squeeze(1), label_batch.squeeze(1)[:].long(),weights,args.double_channel)
                 loss = loss_ce
             if args.patch_mse_loss:
-                loss += args.gamma_coeff * Patch_MSE_Loss(outputs, label_batch)
+                loss += args.gamma_coeff * patch_mse_loss(outputs, label_batch)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
