@@ -50,14 +50,32 @@ def BCELoss_class_weighted():
             return torch.mean(bce)
     return loss
 
-def patch_mse_loss(output, target):
-    output = torch.softmax(output,1)
-    base_shape = output.shape
-    height = base_shape[-2]
-    width = base_shape[-1]
-    print(output.shape,target.shape)
+def Patch_MSE_Loss():
     
-
+    def _one_hot_encoder(input_tensor):
+        tensor_list = []
+        for i in range(2):
+            temp_prob = input_tensor == i  # * torch.ones_like(input_tensor)
+            tensor_list.append(temp_prob.unsqueeze(1))
+        output_tensor = torch.cat(tensor_list, dim=1)
+        return output_tensor.float()
+        
+    def loss(output, target):
+        mseLoss = nn.MSELoss()
+        target = _one_hot_encoder(target)
+        print("in mse loss: ", output.shape, target.shape)
+        base_shape = target.shape
+        height = base_shape[-2]
+        width = base_shape[-1]
+        loss = 0
+        h_list = [0, height//2, height]
+        w_list = [0, width//2, width]
+        for h in range(2):
+            for w in range(2):
+                out_patch = output[:, :, h_list[h] : h_list[h+1], w_list[w] : w_list[w+1]]
+                target_patch = target[:, :, h_list[h] : h_list[h+1], w_list[w] : w_list[w+1]]
+                loss += mseLoss(out_patch, target_patch)
+        return loss/4
 
 def trainer_synapse(args, model, snapshot_path):
     
@@ -87,6 +105,8 @@ def trainer_synapse(args, model, snapshot_path):
 #     print(ce_loss)
     if args.dice_flag:
         dice_loss = DiceLoss(num_classes)
+    if args.patch_mse_loss:
+        patch_mse_loss = Patch_MSE_Loss()
     optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay=0.0001)
     writer = SummaryWriter(snapshot_path + '/log')
     iter_num = 0
@@ -106,7 +126,7 @@ def trainer_synapse(args, model, snapshot_path):
 #             print(outputs.shape,label_batch[:].long().shape,weights,label_batch.shape)
 #             print(weights.shape)
 #             exit()
-            patch_mse_loss(outputs,label_batch)
+            
             if args.dice_flag:
                 label_batch = label_batch.squeeze()
                 loss_dice = dice_loss(outputs, label_batch, softmax=True)
@@ -116,6 +136,8 @@ def trainer_synapse(args, model, snapshot_path):
             else:
                 loss_ce = ce_loss(outputs.squeeze(1), label_batch.squeeze(1)[:].long(),weights,args.double_channel)
                 loss = loss_ce
+            if args.patch_mse_loss:
+                loss += args.gamma_coeff * Patch_MSE_Loss(outputs, label_batch)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
