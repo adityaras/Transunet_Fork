@@ -50,6 +50,13 @@ def BCELoss_class_weighted():
             return torch.mean(bce)
     return loss
 
+# def patch_mse_loss(inpt, target):
+#     base_shape = inpt.shape
+#     height = base_shape[-2]
+#     width = base_shape[-1]
+    
+
+
 def trainer_synapse(args, model, snapshot_path):
     
     logging.basicConfig(filename=snapshot_path + "/log.txt", level=logging.INFO,
@@ -92,6 +99,7 @@ def trainer_synapse(args, model, snapshot_path):
             image_batch, label_batch,weights = image_batch.cuda(), label_batch.cuda(),weights.cuda()
             
             outputs = model(image_batch)
+            print(outputs.shape,label_batch.shape)
 #             print(image_batch.shape, outputs.shape,label_batch.shape)
 #             print(outputs.shape,label_batch[:].long().shape,weights,label_batch.shape)
 #             print(weights.shape)
