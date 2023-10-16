@@ -106,7 +106,7 @@ def trainer_synapse(args, model, snapshot_path):
 #             print(outputs.shape,label_batch[:].long().shape,weights,label_batch.shape)
 #             print(weights.shape)
 #             exit()
-            patch_mse_loss(output,label_batch)
+            patch_mse_loss(outputs,label_batch)
             if args.dice_flag:
                 label_batch = label_batch.squeeze()
                 loss_dice = dice_loss(outputs, label_batch, softmax=True)
