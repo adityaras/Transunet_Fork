@@ -164,7 +164,7 @@ def trainer_synapse(args, model, snapshot_path):
 #                 labs = label_batch[...].unsqueeze(0) * 50
 #                 writer.add_image('train/GroundTruth', labs, iter_num)
             if args.patch_mse_loss and args.dice_flag:
-                print('iteration %d : loss : %f, loss_ce: %f, weighted_loss_dice : %f, weighted_loss_patch_mse: %f' % (iter_num, loss.item(), loss_ce.item(), args.alpha_coeff* loss_dice.item(), args.gamma_coeff * loss_patch_mse.item())
+                print('iteration %d : loss : %f, loss_ce: %f, weighted_loss_dice : %f, weighted_loss_patch_mse: %f' % (iter_num, loss.item(), loss_ce.item(), args.alpha_coeff* loss_dice.item(), args.gamma_coeff * loss_patch_mse.item()))
             elif args.patch_mse_loss:
                 print('iteration %d : loss : %f, loss_ce: %f, weighted_loss_patch_mse: %f' % (iter_num, loss.item(), loss_ce.item(), args.gamma_coeff * loss_patch_mse.item()))
             elif args.dice_flag:
