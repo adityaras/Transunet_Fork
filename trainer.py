@@ -139,7 +139,8 @@ def trainer_synapse(args, model, snapshot_path):
                 loss += loss_ce
             if args.patch_mse_loss:
                 label_batch = label_batch.squeeze()
-                loss += args.gamma_coeff * patch_mse_loss.loss(outputs, label_batch)
+                loss_patch_mse = patch_mse_loss.loss(outputs, label_batch)
+                loss += args.gamma_coeff * loss_patch_mse
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -162,7 +163,15 @@ def trainer_synapse(args, model, snapshot_path):
 #                 writer.add_image('train/Prediction', outputs[1, ...] * 50, iter_num)
 #                 labs = label_batch[...].unsqueeze(0) * 50
 #                 writer.add_image('train/GroundTruth', labs, iter_num)
-            print('iteration %d : loss : %f, loss_ce: %f' % (iter_num, loss.item(), loss_ce.item()))
+            if args.patch_mse_loss and args.dice_flag:
+                print('iteration %d : loss : %f, loss_ce: %f, weighted_loss_dice : %f, weighted_loss_patch_mse: %f' % (iter_num, loss.item(), loss_ce.item(), args.alpha_coeff* loss_dice.item(), args.gamma_coeff * loss_patch_mse.item))
+            elif args.patch_mse_loss:
+                print('iteration %d : loss : %f, loss_ce: %f, weighted_loss_patch_mse: %f' % (iter_num, loss.item(), loss_ce.item(), args.gamma_coeff * loss_patch_mse.item))
+            elif args.dice_flag:
+                print('iteration %d : loss : %f, loss_ce: %f, weighted_loss_dice: %f' % (iter_num, loss.item(), loss_ce.item(), args.alpha_coeff* loss_dice.item()))
+            else:
+                print('iteration %d : loss : %f, loss_ce: %f' % (iter_num, loss.item(), loss_ce.item()))
+
         save_interval = 2  # int(max_epoch/6)
         if (epoch_num + 1) % save_interval == 0:
             save_mode_path = os.path.join(snapshot_path, 'epoch_' + str(epoch_num) + '.pth')
