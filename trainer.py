@@ -110,7 +110,7 @@ def trainer_synapse(args, model, snapshot_path):
         patch_mse_loss = Patch_MSE_Loss()
     optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay=0.0001)
     writer = SummaryWriter(snapshot_path + '/log')
-    iter_num = 0
+    iter_num = args.epochs_till_now * len(trainloader)
     max_epoch = args.max_epochs
     max_iterations = args.max_epochs * len(trainloader)  # max_epoch = max_iterations // len(trainloader) + 1
     print("{} iterations per epoch. {} max iterations ".format(len(trainloader), max_iterations))
