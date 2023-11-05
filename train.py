@@ -11,7 +11,7 @@ from trainer import trainer_synapse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--root_path', type=str,
-                    default="../../input/co-skel-448x448/CoSkel+", help='root dir for data')
+                    default="../../input/co-skel-448x448/CoSkel/CoSkel+", help='root dir for data')
 parser.add_argument('--load_checkpoint_path', type=str,
                     default=".", help='Path for sved model')
 parser.add_argument('--dataset', type=str,
