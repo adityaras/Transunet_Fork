@@ -71,7 +71,9 @@ class Attention(nn.Module):
         return x.permute(0, 2, 1, 3)
 
     def cross_image_selective_attention_mask(self,x,option):
+        
         dim1 = int(math.sqrt(x.shape[2]))
+        print("GOOOGOOAGAGAGA: ",x.shape, dim1)
         query_vector = torch.zeros((x.shape[0],x.shape[1],dim1,dim1,x.shape[-1]),dtype = x.dtype)
         if option ==0:
             query_vector[:,:,:dim1//2,:dim1//2,:] = torch.ones((x.shape[0],x.shape[1],dim1//2,dim1//2,x.shape[-1]),dtype=x.dtype)
@@ -93,7 +95,7 @@ class Attention(nn.Module):
         query_layer = self.transpose_for_scores(mixed_query_layer)
         key_layer = self.transpose_for_scores(mixed_key_layer)
         value_layer = self.transpose_for_scores(mixed_value_layer)
-
+        
         if self.config.selective_attention:
             query_mask1,key_mask1 = self.cross_image_selective_attention_mask(query_layer,0)
             query_mask2,key_mask2 = self.cross_image_selective_attention_mask(query_layer,1)
@@ -117,7 +119,7 @@ class Attention(nn.Module):
         else:
             attention_scores = torch.matmul(query_layer, key_layer.transpose(-1, -2))
 
-        attention_scores = torch.matmul(query_layer, key_layer.transpose(-1, -2))
+        # attention_scores = torch.matmul(query_layer, key_layer.transpose(-1, -2))
         attention_scores = attention_scores / math.sqrt(self.attention_head_size)
         attention_probs = self.softmax(attention_scores)
         weights = attention_probs if self.vis else None
