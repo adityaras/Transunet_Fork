@@ -68,13 +68,11 @@ class Attention(nn.Module):
     def transpose_for_scores(self, x):
         new_x_shape = x.size()[:-1] + (self.num_attention_heads, self.attention_head_size)
         x = x.view(*new_x_shape)
-        print("NONOPNONONONO: ", x.shape)
         return x.permute(0, 2, 1, 3)
 
     def cross_image_selective_attention_mask(self,x,option):
         
         dim1 = int(math.sqrt(x.shape[2]))
-        print("GOOOGOOAGAGAGA: ",x.shape, dim1)
         query_vector = torch.zeros((x.shape[0],x.shape[1],dim1,dim1,x.shape[-1]),dtype = x.dtype)
         if option ==0:
             query_vector[:,:,:dim1//2,:dim1//2,:] = torch.ones((x.shape[0],x.shape[1],dim1//2,dim1//2,x.shape[-1]),dtype=x.dtype)
@@ -92,11 +90,9 @@ class Attention(nn.Module):
         mixed_query_layer = self.query(hidden_states)
         mixed_key_layer = self.key(hidden_states)
         mixed_value_layer = self.value(hidden_states)
-        print("HAHAHOHOHOO: ", mixed_query_layer.shape, mixed_key_layer.shape, mixed_value_layer.shape)
         query_layer = self.transpose_for_scores(mixed_query_layer)
         key_layer = self.transpose_for_scores(mixed_key_layer)
         value_layer = self.transpose_for_scores(mixed_value_layer)
-        print("NAMASTE: ", query_layer.shape, key_layer.shape, value_layer.shape)
         if self.config.selective_attention:
             query_mask1,key_mask1 = self.cross_image_selective_attention_mask(query_layer,0)
             query_mask2,key_mask2 = self.cross_image_selective_attention_mask(query_layer,1)
