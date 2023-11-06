@@ -54,7 +54,6 @@ class Attention(nn.Module):
         self.num_attention_heads = config.transformer["num_heads"]
         self.attention_head_size = int(config.hidden_size / self.num_attention_heads)
         self.all_head_size = self.num_attention_heads * self.attention_head_size
-        print("Hidden and All Head Size: ",config.hidden_size, self.all_head_size)
         self.query = Linear(config.hidden_size, self.all_head_size)
         self.key = Linear(config.hidden_size, self.all_head_size)
         self.value = Linear(config.hidden_size, self.all_head_size)
