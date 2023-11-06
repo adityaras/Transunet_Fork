@@ -17,7 +17,7 @@ parser.add_argument('--load_checkpoint_path', type=str,
 parser.add_argument('--dataset', type=str,
                     default='Co-Skel', help='experiment_name')
 parser.add_argument('--list_dir', type=str,
-                    default="../../input/co-skel-448x448/CoSkel+/train.csv", help='list dir')
+                    default="../../input/co-skel-448x448/CoSkel/CoSkel+/train.csv", help='list dir')
 parser.add_argument('--num_classes', type=int,
                     default=1, help='output channel of network')
 parser.add_argument('--max_iterations', type=int,
