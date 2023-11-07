@@ -118,7 +118,7 @@ if __name__ == "__main__":
             args.img_size / args.vit_patches_size), int(args.img_size / args.vit_patches_size))
     net = ViT_seg(config_vit, img_size=args.img_size,
                   num_classes=config_vit.n_classes).cuda()
-    print("Is Pretrain ?: ",args.is_pretrain)
+    print("Is Pretrain ?: ",args.is_pretrain, args.double_channel, args.dice_flag)
     if args.is_pretrain:
         net.load_state_dict(torch.load(args.model_path))
         print("Loading Pretrained Model: ", net)
