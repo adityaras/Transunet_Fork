@@ -85,8 +85,7 @@ if __name__ == "__main__":
     }
     args.num_classes = dataset_config[dataset_name]['num_classes']
     args.root_path = dataset_config[dataset_name]['root_path']
-    args.list_dir = dataset_config[dataset_name]['list_dir']
-    args.is_pretrain = False
+    args.list_dir = dataset_config[dataset_name]['list_dir'] 
     args.is_chkpnt = False
     args.exp = 'TU_' + dataset_name + str(args.img_size)
     snapshot_path = "../model/{}/{}".format(args.exp, 'TU')
@@ -118,7 +117,6 @@ if __name__ == "__main__":
             args.img_size / args.vit_patches_size), int(args.img_size / args.vit_patches_size))
     net = ViT_seg(config_vit, img_size=args.img_size,
                   num_classes=config_vit.n_classes).cuda()
-    print("Is Pretrain ?: ",args.is_pretrain, args.double_channel, args.dice_flag)
     if args.is_pretrain:
         net.load_state_dict(torch.load(args.model_path))
         print("Loading Pretrained Model: ", net)
