@@ -120,6 +120,7 @@ if __name__ == "__main__":
                   num_classes=config_vit.n_classes).cuda()
     if args.is_pretrain:
         net.load_state_dict(torch.load(args.model_path))
+        print("Loading Pretrained Model: ", net)
 
     trainer = {args.dataset: trainer_synapse, }
     trainer[dataset_name](args, net, snapshot_path)
