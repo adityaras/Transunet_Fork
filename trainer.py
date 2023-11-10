@@ -16,6 +16,20 @@ from utils import DiceLoss
 from torchvision import transforms
 from datasets.dataset_synapse import Synapse_dataset, RandomGenerator
 from dataloader import LoadData
+from prettytable import PrettyTable
+
+def count_parameters(model):
+    table = PrettyTable(["Modules", "Parameters"])
+    total_params = 0
+    for name, parameter in model.named_parameters():
+        if not parameter.requires_grad:
+            continue
+        params = parameter.numel()
+        table.add_row([name, params])
+        total_params += params
+    print(table)
+    print(f"Total Trainable Params: {total_params}")
+    return total_params
 
 def BCELoss_class_weighted():
 
@@ -87,9 +101,7 @@ def trainer_synapse(args, model, snapshot_path):
     base_lr = args.base_lr
     num_classes = args.num_classes
     batch_size = args.batch_size * args.n_gpu
-    for name, param in model.named_parameters():
-        if param.requires_grad:
-            print("Name and Parameters: ",name, param.data)
+    count_parameters(model)
     # max_iterations = args.max_iterations
     db_train = LoadData(args.list_dir,args.root_path,args.double_channel)
 #     db_train = Synapse_dataset(base_dir=args.root_path, list_dir=args.list_dir, split="train",
