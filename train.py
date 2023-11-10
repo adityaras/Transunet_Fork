@@ -45,8 +45,10 @@ parser.add_argument('--dice_flag', dest='dice_flag', action='store_true',
                     help='Using Dice loss')
 parser.add_argument('--double_channel', dest='double_channel', action='store_true',
                     help='Using 2 channel')
-parser.add_argument('--is_pretrain', dest='is_pretrain', action='store_true',
+parser.add_argument('--learn_from_pretrained', dest='is_pretrain', action='store_true',
                     help='Using pretrained model')
+parser.add_argument('--is_pretrain', dest='is_pretrain', action='store_true',
+                    help='Continue training again')
 parser.add_argument('--epochs_till_now', type=int,
                     default=0, help='epochs to start at if pretraining')
 parser.add_argument('--model_path', type=str,
