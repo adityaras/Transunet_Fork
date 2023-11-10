@@ -87,6 +87,9 @@ def trainer_synapse(args, model, snapshot_path):
     base_lr = args.base_lr
     num_classes = args.num_classes
     batch_size = args.batch_size * args.n_gpu
+    for name, param in model.named_parameters():
+        if param.requires_grad:
+            print("Name and Parameters: ",name, param.data)
     # max_iterations = args.max_iterations
     db_train = LoadData(args.list_dir,args.root_path,args.double_channel)
 #     db_train = Synapse_dataset(base_dir=args.root_path, list_dir=args.list_dir, split="train",
