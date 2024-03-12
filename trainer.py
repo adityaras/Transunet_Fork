@@ -89,6 +89,7 @@ class Patch_MSE_Loss():
             for w in range(2):
                 out_patch = output[:, :, h_list[h] : h_list[h+1], w_list[w] : w_list[w+1]]
                 target_patch = target[:, :, h_list[h] : h_list[h+1], w_list[w] : w_list[w+1]]
+                print(out_patch.shape,target_patch.shape)
                 loss += mseLoss(out_patch, target_patch)
         return loss/4
 
