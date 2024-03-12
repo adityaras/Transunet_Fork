@@ -61,7 +61,7 @@ def BCELoss_class_weighted():
             weights = torch.unsqueeze(weights,axis=2)
             weights = torch.unsqueeze(weights,axis=3)
             weights = torch.tile(weights,(1,1,inpt.shape[-2],inpt.shape[-1]))
-            print("inside BCE: ",inpt[:,1,:,:]))
+            print("inside BCE: ",inpt[:,1,:,:])
             bce = - weights[:,0,:,:] * target[:,1,:,:] * torch.log(inpt[:,1,:,:]) - (target[:,0,:,:]) * weights[:,1,:,:] * torch.log(inpt[:,0,:,:])
             return torch.mean(bce)
     return loss
