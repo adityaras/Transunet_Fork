@@ -76,8 +76,9 @@ class Patch_MSE_Loss():
         output_tensor = torch.cat(tensor_list, dim=1)
         return output_tensor.float()
         
-    def loss(self, output, target):
-        mseLoss = nn.MSELoss()
+    def loss(self, output, target, mse=False):
+        if mse:
+            mseLoss = nn.MSELoss()
         target = self._one_hot_encoder(target)
         base_shape = target.shape
         height = base_shape[-2]
@@ -89,8 +90,11 @@ class Patch_MSE_Loss():
             for w in range(2):
                 out_patch = output[:, :, h_list[h] : h_list[h+1], w_list[w] : w_list[w+1]]
                 target_patch = target[:, :, h_list[h] : h_list[h+1], w_list[w] : w_list[w+1]]
-                print(out_patch.shape,target_patch.shape)
-                loss += mseLoss(out_patch, target_patch)
+                if mse:
+                    loss += mseLoss(out_patch, target_patch)
+                else:
+                    print("inside: ",out_patch.shape,target_patch.shape)
+                    loss += torch.square(torch.sum(out_patch) - torch.sum(target_patch))
         return loss/4
 
 def trainer_synapse(args, model, snapshot_path):
