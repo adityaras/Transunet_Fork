@@ -93,7 +93,7 @@ class Patch_MSE_Loss():
                 if mse:
                     loss += mseLoss(out_patch, target_patch)
                 else:
-                    print("inside: ",out_patch.shape,target_patch.shape)
+                    print("inside: ",torch.sum(out_patch) - torch.sum(target_patch))
                     loss += torch.square(torch.sum(out_patch) - torch.sum(target_patch))
         return loss/4
 
