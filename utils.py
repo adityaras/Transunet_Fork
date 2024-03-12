@@ -32,6 +32,7 @@ class DiceLoss(nn.Module):
     def forward(self, inputs, target, weight=None, softmax=False):
         if softmax:
             inputs = torch.softmax(inputs, dim=1)
+        print("inside _dice_loss: ",inputs[:,1,:,:]))
         target = self._one_hot_encoder(target)
         if weight is None:
             weight = [1] * self.n_classes
