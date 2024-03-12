@@ -94,7 +94,7 @@ class Patch_MSE_Loss():
                 if mse:
                     loss += mseLoss(out_patch, target_patch)
                 else:
-                    print("inside Patch MSE: ",out_patch[:,1,:,:]))
+                    print("inside Patch MSE: ",out_patch[:,1,:,:])
                     loss += torch.square(torch.sum(out_patch[:,1,:,:]) - torch.sum(target_patch[:,1,:,:]))
         return loss/4
 
