@@ -61,6 +61,7 @@ def BCELoss_class_weighted():
             weights = torch.unsqueeze(weights,axis=2)
             weights = torch.unsqueeze(weights,axis=3)
             weights = torch.tile(weights,(1,1,inpt.shape[-2],inpt.shape[-1]))
+            print("inside BCE: ",inpt[:,1,:,:]))
             bce = - weights[:,0,:,:] * target[:,1,:,:] * torch.log(inpt[:,1,:,:]) - (target[:,0,:,:]) * weights[:,1,:,:] * torch.log(inpt[:,0,:,:])
             return torch.mean(bce)
     return loss
@@ -93,7 +94,7 @@ class Patch_MSE_Loss():
                 if mse:
                     loss += mseLoss(out_patch, target_patch)
                 else:
-                    print("inside: ", torch.sum(out_patch[:,1,:,:]) ,torch.sum(target_patch[:,1,:,:]))
+                    print("inside Patch MSE: ",out_patch[:,1,:,:]))
                     loss += torch.square(torch.sum(out_patch[:,1,:,:]) - torch.sum(target_patch[:,1,:,:]))
         return loss/4
 
