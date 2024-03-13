@@ -43,7 +43,7 @@ def BCELoss_class_weighted():
         return output_tensor.float()
 
     def loss(inpt, target,weights,dc):
-        print(target.shape,v.shape)
+        print(target.shape,inpt.shape)
         inpt = torch.softmax(inpt, dim=1)
         print(target.shape,inpt.shape)
         if not dc:
