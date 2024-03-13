@@ -81,6 +81,9 @@ class Patch_MSE_Loss():
         if mse:
             mseLoss = nn.MSELoss()
         target = self._one_hot_encoder(target)
+        print(targets.shape,output.shape)
+        output = torch.softmax(output, dim=1)
+        print(targets.shape,output.shape)
         base_shape = target.shape
         height = base_shape[-2]
         width = base_shape[-1]
