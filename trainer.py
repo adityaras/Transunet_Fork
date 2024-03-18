@@ -99,7 +99,6 @@ class Patch_MSE_Loss():
                 target_patch = target[:, :, h_list[h] : h_list[h+1], w_list[w] : w_list[w+1]]
                 if mse:
                     loss += mseLoss(out_patch[:,1,:,:], target_patch[:,1,:,:])
-                    print("inside mse loss: " + mseLoss)
                 else:
                     # print(torch.sum(out_patch[:,1,:,:]) , torch.sum(target_patch[:,1,:,:]))
                     loss += torch.square(torch.sum(out_patch[:,1,:,:]) - torch.sum(target_patch[:,1,:,:]))
