@@ -166,7 +166,7 @@ def trainer_synapse(args, model, snapshot_path):
                 loss += loss_ce
             if args.patch_mse_loss:
                 label_batch = label_batch.squeeze()
-                loss_patch_mse = patch_mse_loss.loss(outputs, label_batch)
+                loss_patch_mse = patch_mse_loss.loss(outputs, label_batch,args.patch_mse_dontcount)
                 loss += args.gamma_coeff * loss_patch_mse
             optimizer.zero_grad()
             loss.backward()
