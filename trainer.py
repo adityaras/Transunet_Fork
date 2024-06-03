@@ -144,6 +144,7 @@ def trainer_synapse(args, model, snapshot_path):
     print("{} iterations per epoch. {} max iterations ".format(len(trainloader), max_iterations))
     best_performance = 0.0
     iterator = tqdm(range(args.epochs_till_now,max_epoch), ncols=70)
+    loss_arr = []
     for epoch_num in iterator:
         for i_batch, sampled_batch in enumerate(trainloader):
             image_batch, label_batch,weights,_ = sampled_batch[0], sampled_batch[1],sampled_batch[2],sampled_batch[3]
@@ -161,10 +162,10 @@ def trainer_synapse(args, model, snapshot_path):
                 loss_dice = dice_loss(outputs, label_batch, softmax=True)
 #                 print(loss_dice)
                 loss_ce = ce_loss(outputs, label_batch.long(),weights,args.double_channel)
-                loss += loss_ce + args.alpha_coeff * loss_dice
+                loss += args.beta_coeff * loss_ce + args.alpha_coeff * loss_dice
             else:
                 loss_ce = ce_loss(outputs.squeeze(1), label_batch.squeeze(1)[:].long(),weights,args.double_channel)
-                loss += loss_ce
+                loss += args.beta_coeff * loss_ce
             if args.patch_mse_loss:
                 label_batch = label_batch.squeeze()
                 loss_patch_mse = patch_mse_loss.loss(outputs, label_batch,args.patch_mse_dontcount)
@@ -179,8 +180,7 @@ def trainer_synapse(args, model, snapshot_path):
             iter_num = iter_num + 1
             writer.add_scalar('info/lr', lr_, iter_num)
             writer.add_scalar('info/total_loss', loss, iter_num)
-            writer.add_scalar('info/loss_ce', loss_ce, iter_num)
-
+            writer.add_scalar('info/loss_ce', args.beta_coeff * loss_ce.item(), iter_num)
         
 
 #             if iter_num % 20 == 0:
@@ -192,13 +192,21 @@ def trainer_synapse(args, model, snapshot_path):
 #                 labs = label_batch[...].unsqueeze(0) * 50
 #                 writer.add_image('train/GroundTruth', labs, iter_num)
             if args.patch_mse_loss and args.dice_flag:
-                print('iteration %d : loss : %f, loss_ce: %f, weighted_loss_dice : %f, weighted_loss_patch_mse: %f' % (iter_num, loss.item(), loss_ce.item(), args.alpha_coeff* loss_dice.item(), args.gamma_coeff * loss_patch_mse.item()))
+                writer.add_scalar('info/loss_patchmse', args.gamma_coeff * loss_patch_mse.item(), iter_num)
+                writer.add_scalar('info/loss_dice', args.alpha_coeff * loss_dice.item(), iter_num)
+                loss_arr.append([iter_num, loss.item(), args.beta_coeff * loss_ce.item(), args.alpha_coeff* loss_dice.item(), args.gamma_coeff * loss_patch_mse.item()])
+                print('iteration %d : loss : %f, loss_ce: %f, weighted_loss_dice : %f, weighted_loss_patch_mse: %f' % (iter_num, loss.item(), args.beta_coeff * loss_ce.item(), args.alpha_coeff* loss_dice.item(), args.gamma_coeff * loss_patch_mse.item()))
             elif args.patch_mse_loss:
-                print('iteration %d : loss : %f, loss_ce: %f, weighted_loss_patch_mse: %f' % (iter_num, loss.item(), loss_ce.item(), args.gamma_coeff * loss_patch_mse.item()))
+                writer.add_scalar('info/loss_patchmse', loss_patch_mse, iter_num)
+                loss_arr.append([iter_num, loss.item(), args.beta_coeff * loss_ce.item(), 0, args.gamma_coeff * loss_patch_mse.item()])
+                print('iteration %d : loss : %f, loss_ce: %f, weighted_loss_patch_mse: %f' % (iter_num, loss.item(), args.beta_coeff * loss_ce.item(), args.gamma_coeff * loss_patch_mse.item()))
             elif args.dice_flag:
-                print('iteration %d : loss : %f, loss_ce: %f, weighted_loss_dice: %f' % (iter_num, loss.item(), loss_ce.item(), args.alpha_coeff* loss_dice.item()))
+                writer.add_scalar('info/loss_dice', loss_dice, iter_num)
+                loss_arr.append([iter_num, loss.item(), args.beta_coeff * loss_ce.item(), args.alpha_coeff* loss_dice.item(), 0])
+                print('iteration %d : loss : %f, loss_ce: %f, weighted_loss_dice: %f' % (iter_num, loss.item(), args.beta_coeff * loss_ce.item(), args.alpha_coeff* loss_dice.item()))
             else:
-                print('iteration %d : loss : %f, loss_ce: %f' % (iter_num, loss.item(), loss_ce.item()))
+                loss_arr.append([iter_num, loss.item(), args.beta_coeff * loss_ce.item(), 0, 0])
+                print('iteration %d : loss : %f, loss_ce: %f' % (iter_num, loss.item(), args.beta_coeff * loss_ce.item()))
 
         save_interval = 2  # int(max_epoch/6)
         if (epoch_num + 1) % save_interval == 0:
