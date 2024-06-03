@@ -17,6 +17,7 @@ from torchvision import transforms
 from datasets.dataset_synapse import Synapse_dataset, RandomGenerator
 from dataloader import LoadData
 from prettytable import PrettyTable
+import csv
 
 def count_parameters(model):
     table = PrettyTable(["Modules", "Parameters"])
@@ -138,6 +139,7 @@ def trainer_synapse(args, model, snapshot_path):
         patch_mse_loss = Patch_MSE_Loss()
     optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay=0.0001)
     writer = SummaryWriter(snapshot_path + '/log')
+    path_for_log_writing = SummaryWriter(snapshot_path + '/log/loss_iter.log')
     iter_num = args.epochs_till_now * len(trainloader)
     max_epoch = args.max_epochs
     max_iterations = args.max_epochs * len(trainloader)  # max_epoch = max_iterations // len(trainloader) + 1
@@ -207,7 +209,9 @@ def trainer_synapse(args, model, snapshot_path):
             else:
                 loss_arr.append([iter_num, loss.item(), args.beta_coeff * loss_ce.item(), 0, 0])
                 print('iteration %d : loss : %f, loss_ce: %f' % (iter_num, loss.item(), args.beta_coeff * loss_ce.item()))
-
+            with open(path_for_log_writing, 'w') as csvfile:
+                csvwriter = csv.writer(csvfile)
+                csvwriter.writerows(loss_arr)
         save_interval = 2  # int(max_epoch/6)
         if (epoch_num + 1) % save_interval == 0:
             save_mode_path = os.path.join(snapshot_path, 'epoch_' + str(epoch_num) + '.pth')
