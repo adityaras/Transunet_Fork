@@ -137,7 +137,13 @@ def trainer_synapse(args, model, snapshot_path):
         dice_loss = DiceLoss(num_classes)
     if args.patch_mse_loss:
         patch_mse_loss = Patch_MSE_Loss()
+        
     optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay=0.0001)
+    if args.adam:
+        optimizer = optim.Adam(model.parameters(), lr=base_lr, weight_decay=0.0001)
+    if args.adamw:
+        optimizer = optim.AdamW(model.parameters(), lr=base_lr, weight_decay=0.0001)
+
     writer = SummaryWriter(snapshot_path + '/log')
     path_for_log_writing = snapshot_path + '/log/loss_iter.log'
     iter_num = args.epochs_till_now * len(trainloader)
