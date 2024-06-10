@@ -65,6 +65,10 @@ parser.add_argument('--patch_mse_loss', action='store_true',
                     help='Using patch mse')
 parser.add_argument('--gamma_coeff', type=float,  default=1,
                     help='MSE loss network learning rate')
+parser.add_argument('--adam', dest='adam', action='store_true',
+                    help='Using Adam Optimiser')
+parser.add_argument('--adamw', dest='adamw', action='store_true',
+                    help='Using AdamW Optimiser')
 args = parser.parse_args()
 
 
