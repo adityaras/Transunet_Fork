@@ -69,6 +69,8 @@ parser.add_argument('--adam', dest='adam', action='store_true',
                     help='Using Adam Optimiser')
 parser.add_argument('--adamw', dest='adamw', action='store_true',
                     help='Using AdamW Optimiser')
+parser.add_argument('--weight_decay', type=float,  default=1e-4,
+                    help='MSE loss network learning rate')
 args = parser.parse_args()
 
 
