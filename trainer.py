@@ -86,7 +86,7 @@ class SkelRecallLoss():
         print("lossssss")
         print(output.shape, target.shape)
         loss_output = torch.sum(target * output, dim=(2, 3)) / (torch.sum(target, dim=(2, 3)) + 1e-6)
-        print(loss_output.shape)
+        print(loss_output.shape, loss_output)
 
 class Patch_MSE_Loss():
     
@@ -191,7 +191,7 @@ def trainer_synapse(args, model, snapshot_path):
             if args.dilate_skel:
                 label_batch = label_batch.squeeze()
                 loss_skell_recall = skel_recall_loss.loss(outputs, label_batch)
-                loss += args.delta_coeff * loss_patch_mse
+                loss += args.delta_coeff * loss_skell_recall
             if args.dice_flag:
                 label_batch = label_batch.squeeze()
                 loss_dice = dice_loss(outputs, label_batch, softmax=True)
