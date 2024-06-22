@@ -84,7 +84,7 @@ class SkelRecallLoss():
         target = self._one_hot_encoder(target)
         output = torch.softmax(output, dim=1)
         loss_output = - torch.sum(target * output, dim=(2, 3)) / (torch.sum(target, dim=(2, 3)) + 1e-6)
-        print(loss_output.shape, loss_output, loss_output.mean())
+        return loss_output.mean()
 
 class Patch_MSE_Loss():
     
@@ -214,7 +214,6 @@ def trainer_synapse(args, model, snapshot_path):
             writer.add_scalar('info/lr', lr_, iter_num)
             writer.add_scalar('info/total_loss', loss, iter_num)
             writer.add_scalar('info/loss_ce', args.beta_coeff * loss_ce.item(), iter_num)
-        
 
 #             if iter_num % 20 == 0:
 #                 image = image_batch[1, 0:1, :, :]
@@ -224,22 +223,23 @@ def trainer_synapse(args, model, snapshot_path):
 #                 writer.add_image('train/Prediction', outputs[1, ...] * 50, iter_num)
 #                 labs = label_batch[...].unsqueeze(0) * 50
 #                 writer.add_image('train/GroundTruth', labs, iter_num)
-            if args.patch_mse_loss and args.dice_flag:
-                writer.add_scalar('info/loss_patchmse', args.gamma_coeff * loss_patch_mse.item(), iter_num)
-                writer.add_scalar('info/loss_dice', args.alpha_coeff * loss_dice.item(), iter_num)
-                loss_arr.append([iter_num, loss.item(), args.beta_coeff * loss_ce.item(), args.alpha_coeff* loss_dice.item(), args.gamma_coeff * loss_patch_mse.item()])
-                print('iteration %d : loss : %f, loss_ce: %f, weighted_loss_dice : %f, weighted_loss_patch_mse: %f' % (iter_num, loss.item(), args.beta_coeff * loss_ce.item(), args.alpha_coeff* loss_dice.item(), args.gamma_coeff * loss_patch_mse.item()))
-            elif args.patch_mse_loss:
-                writer.add_scalar('info/loss_patchmse', loss_patch_mse, iter_num)
-                loss_arr.append([iter_num, loss.item(), args.beta_coeff * loss_ce.item(), 0, args.gamma_coeff * loss_patch_mse.item()])
-                print('iteration %d : loss : %f, loss_ce: %f, weighted_loss_patch_mse: %f' % (iter_num, loss.item(), args.beta_coeff * loss_ce.item(), args.gamma_coeff * loss_patch_mse.item()))
-            elif args.dice_flag:
+            loss_arr.append([iter_num, loss.item(), args.beta_coeff * loss_ce.item()])
+            if args.dice_flag:
                 writer.add_scalar('info/loss_dice', loss_dice, iter_num)
-                loss_arr.append([iter_num, loss.item(), args.beta_coeff * loss_ce.item(), args.alpha_coeff* loss_dice.item(), 0])
-                print('iteration %d : loss : %f, loss_ce: %f, weighted_loss_dice: %f' % (iter_num, loss.item(), args.beta_coeff * loss_ce.item(), args.alpha_coeff* loss_dice.item()))
+                loss_arr[-1].append(args.alpha_coeff * loss_dice.item())
             else:
-                loss_arr.append([iter_num, loss.item(), args.beta_coeff * loss_ce.item(), 0, 0])
-                print('iteration %d : loss : %f, loss_ce: %f' % (iter_num, loss.item(), args.beta_coeff * loss_ce.item()))
+                loss_arr[-1].append(0)
+            if args.patch_mse_loss:
+                writer.add_scalar('info/loss_patchmse', loss_patch_mse, iter_num)
+                loss_arr[-1].append(args.gamma_coeff * loss_patch_mse.item())
+            else:
+                loss_arr[-1].append(0)
+            if args.dilate_skel:
+                writer.add_scalar('info/loss_skell_recall', loss_skell_recall, iter_num)
+                loss_arr[-1].append(args.delta_coeff * loss_skell_recall.item())
+            else:
+                loss_arr[-1].append(0)
+            print('iteration %d : loss : %f, loss_ce: %f, weighted_loss_dice : %f, weighted_loss_patch_mse: %f, skell_recall_loss: %f' % (loss_arr[0], loss_arr[1], loss_arr[2], loss_arr[3], loss_arr[4], loss_arr[5]))
             with open(path_for_log_writing, 'w') as csvfile:
                 csvwriter = csv.writer(csvfile)
                 csvwriter.writerows(loss_arr)
