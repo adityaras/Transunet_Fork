@@ -83,7 +83,10 @@ class SkelRecallLoss():
     def loss(self, output, target, mse=False):
         target = self._one_hot_encoder(target)
         output = torch.softmax(output, dim=1)
-        print("SKEL RECALL LOSS: ", target.shape, output.shape)
+        print("lossssss")
+        print(output.shape, target.shape)
+        loss_output = torch.sum(target * output, dim=(2, 3)) / (torch.sum(B, dim=(2, 3)) + 1e-6)
+        print(loss_output.shape)
 
 class Patch_MSE_Loss():
     
