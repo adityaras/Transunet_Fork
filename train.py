@@ -61,6 +61,8 @@ parser.add_argument('--alpha_coeff', type=float,  default=1,
                     help='segmentation network learning rate')
 parser.add_argument('--beta_coeff', type=float,  default=1,
                     help='cross entropy learning rate')
+parser.add_argument('--delta_coeff', type=float,  default=1,
+                    help='skell recall loss learning rate')
 parser.add_argument('--patch_mse_loss', action='store_true',
                     help='Using patch mse')
 parser.add_argument('--gamma_coeff', type=float,  default=1,
