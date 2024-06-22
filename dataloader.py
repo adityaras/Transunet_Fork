@@ -34,7 +34,7 @@ class LoadData(Dataset):
             dilated_target = skeletonize(targetImage)
             dilated_target = dilation(targetImage, diamond(2))
             dilated_target = dilated_target.astype(np.float32)
-            dilated_target = np.expand_dims(second_target_img,axis=0)
+            dilated_target = np.expand_dims(dilated_target,axis=0)
                 
         counts = np.unique(targetImage,return_counts=True)[1]
         weights = np.array([ counts[0]/(counts[0]+counts[1]) , counts[1]/(counts[0]+counts[1]) ])
