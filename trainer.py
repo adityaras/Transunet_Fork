@@ -70,6 +70,21 @@ def BCELoss_class_weighted():
             return torch.mean(bce)
     return loss
 
+class SkelRecallLoss():
+    def _one_hot_encoder(self, input_tensor):
+        tensor_list = []
+        for i in range(2):
+            temp_prob = input_tensor == i  # * torch.ones_like(input_tensor)
+            tensor_list.append(temp_prob.unsqueeze(1))
+            
+        output_tensor = torch.cat(tensor_list, dim=1)
+        return output_tensor.float()
+        
+    def loss(self, output, target, mse=False):
+        target = self._one_hot_encoder(target)
+        output = torch.softmax(output, dim=1)
+        print("SKEL RECALL LOSS: ", target.shape, output.shape)
+
 class Patch_MSE_Loss():
     
     def _one_hot_encoder(self, input_tensor):
@@ -117,7 +132,7 @@ def trainer_synapse(args, model, snapshot_path):
     batch_size = args.batch_size * args.n_gpu
     count_parameters(model)
     # max_iterations = args.max_iterations
-    db_train = LoadData(args.list_dir,args.root_path,args.double_channel)
+    db_train = LoadData(args.list_dir,args.root_path, args.dilate_skel, args.double_channel)
 #     db_train = Synapse_dataset(base_dir=args.root_path, list_dir=args.list_dir, split="train",
 #                                transform=transforms.Compose(
 #                                    [RandomGenerator(output_size=[args.img_size, args.img_size])]))
@@ -137,6 +152,8 @@ def trainer_synapse(args, model, snapshot_path):
         dice_loss = DiceLoss(num_classes)
     if args.patch_mse_loss:
         patch_mse_loss = Patch_MSE_Loss()
+    if args.dilate_skel:
+        skel_recall_loss = SkelRecallLoss()
         
     optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay= args.weight_decay)
     if args.adam:
@@ -155,9 +172,12 @@ def trainer_synapse(args, model, snapshot_path):
     loss_arr = []
     for epoch_num in iterator:
         for i_batch, sampled_batch in enumerate(trainloader):
-            image_batch, label_batch,weights,_ = sampled_batch[0], sampled_batch[1],sampled_batch[2],sampled_batch[3]
-            image_batch, label_batch,weights = image_batch.cuda(), label_batch.cuda(),weights.cuda()
-            
+            if args.dilate_skel:
+                image_batch, label_batch,weights, dilated_skel ,_ = sampled_batch[0], sampled_batch[1],sampled_batch[2],sampled_batch[3], sampled_batch[4]
+                image_batch, label_batch,weights, dilated_skel = image_batch.cuda(), label_batch.cuda(),weights.cuda(), dilated_skel.cuda()
+            else:
+                image_batch, label_batch,weights,_ = sampled_batch[0], sampled_batch[1],sampled_batch[2],sampled_batch[3]
+                image_batch, label_batch,weights = image_batch.cuda(), label_batch.cuda(),weights.cuda()                
             outputs = model(image_batch)
 #             print(image_batch.shape, outputs.shape,label_batch.shape)
 #             print(outputs.shape,label_batch[:].long().shape,weights,label_batch.shape)
@@ -165,6 +185,10 @@ def trainer_synapse(args, model, snapshot_path):
 #             exit()
             loss = 0
 
+            if args.dilate_skel:
+                label_batch = label_batch.squeeze()
+                loss_skell_recall = skel_recall_loss.loss(outputs, label_batch)
+                loss += args.delta_coeff * loss_patch_mse
             if args.dice_flag:
                 label_batch = label_batch.squeeze()
                 loss_dice = dice_loss(outputs, label_batch, softmax=True)
