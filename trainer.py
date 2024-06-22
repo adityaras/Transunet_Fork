@@ -239,7 +239,7 @@ def trainer_synapse(args, model, snapshot_path):
                 loss_arr[-1].append(args.delta_coeff * loss_skell_recall.item())
             else:
                 loss_arr[-1].append(0)
-            print('iteration %d : loss : %f, loss_ce: %f, weighted_loss_dice : %f, weighted_loss_patch_mse: %f, skell_recall_loss: %f' % (loss_arr[0], loss_arr[1], loss_arr[2], loss_arr[3], loss_arr[4], loss_arr[5]))
+            print('iteration %d : loss : %f, loss_ce: %f, weighted_loss_dice : %f, weighted_loss_patch_mse: %f, skell_recall_loss: %f' % (loss_arr[-1][0], loss_arr[-1][1], loss_arr[-1][2], loss_arr[-1][3], loss_arr[-1][4], loss_arr[-1][5]))
             with open(path_for_log_writing, 'w') as csvfile:
                 csvwriter = csv.writer(csvfile)
                 csvwriter.writerows(loss_arr)
