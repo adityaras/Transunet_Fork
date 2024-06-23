@@ -11,7 +11,7 @@ import cv2
 
 
 class LoadData(Dataset):
-    def __init__(self, fileNames, rootDir, dilate_skel, double_channel = False,transform=None):
+    def __init__(self, fileNames, rootDir, dilate_skel=False, double_channel = False,transform=None):
         self.rootDir = rootDir
         self.transform = transform
         self.dc = double_channel
