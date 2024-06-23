@@ -29,7 +29,7 @@ class LoadData(Dataset):
         targetImage = cv2.imread(targetName, cv2.IMREAD_GRAYSCALE)
         
         targetImage = targetImage > 0.0
-        
+        print("Dilate skel: "self.dilate_skel)
         if self.dilate_skel:
             dilated_target = skeletonize(targetImage)
             dilated_target = dilation(targetImage, diamond(2))
