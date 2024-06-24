@@ -189,7 +189,7 @@ def trainer_synapse(args, model, snapshot_path):
             if args.dilate_skel:
                 label_batch = label_batch.squeeze()
                 loss_skell_recall = skel_recall_loss.loss(outputs, label_batch)
-                loss += args.delta_coeff * loss_skell_recall
+                loss += args.delta_coeff * loss_skell_recall + 1 * args.delta_coeff
             if args.dice_flag:
                 label_batch = label_batch.squeeze()
                 loss_dice = dice_loss(outputs, label_batch, softmax=True)
