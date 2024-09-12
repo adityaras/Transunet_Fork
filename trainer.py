@@ -13,6 +13,7 @@ from torch.nn.modules.loss import CrossEntropyLoss
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from utils import DiceLoss
+import torchvision
 from torchvision import transforms
 from datasets.dataset_synapse import Synapse_dataset, RandomGenerator
 from dataloader import LoadData
@@ -118,9 +119,13 @@ class ComponentMSELoss:
         # Count connected components for the entire tensors
         out_components = self._count_connected_components(output[:, 1, :, :])
         target_components = self._count_connected_components(target[:, 1, :, :])
+
+        print(target_components.shape, target.shape)
         
         # Compute MSE between number of components
         mse_loss = torch.square(out_components - target_components)
+
+        print(mse_loss.mean())
         
         return mse_loss.mean()
 
