@@ -86,6 +86,43 @@ class SkelRecallLoss():
         loss_output = - torch.sum(target * output, dim=(2, 3)) / (torch.sum(target, dim=(2, 3)) + 1e-6)
         return loss_output.mean()
 
+class ComponentMSELoss:
+    
+    def _one_hot_encoder(self, input_tensor):
+        tensor_list = []
+        for i in range(2):  # Assuming binary classification (0 and 1)
+            temp_prob = input_tensor == i
+            tensor_list.append(temp_prob.unsqueeze(1))
+        output_tensor = torch.cat(tensor_list, dim=1)
+        return output_tensor.float()
+
+    def _count_connected_components(self, tensor):
+        binary_mask = tensor.float()
+        components = torchvision.ops.connected_components(binary_mask)
+        components = components.flatten(2)  # Flatten height and width dimensions
+        unique_labels = torch.unique(components, dim=2)  # Get unique labels per (Batch, Channel)
+        components_count = (unique_labels != 0).sum(dim=2)  # Count non-zero unique labels
+        return components_count
+
+    def loss(self, output, target):
+        # One-hot encode the target
+        target = self._one_hot_encoder(target)
+        
+        # Apply softmax to the output
+        output = torch.softmax(output, dim=1)
+
+        print(target.shape, output.shape)
+        
+        # Count connected components for the entire tensors
+        out_components = self._count_connected_components(output[:, 1, :, :])
+        target_components = self._count_connected_components(target[:, 1, :, :])
+        
+        # Compute MSE between number of components
+        mse_loss = torch.square(out_components - target_components)
+        
+        return mse_loss.mean()
+
+
 class Patch_MSE_Loss():
     
     def _one_hot_encoder(self, input_tensor):
@@ -155,6 +192,8 @@ def trainer_synapse(args, model, snapshot_path):
         patch_mse_loss = Patch_MSE_Loss()
     if args.dilate_skel:
         skel_recall_loss = SkelRecallLoss()
+
+    component_mse_loss = ComponentMSELoss()
         
     optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay= args.weight_decay)
     if args.adam:
@@ -180,6 +219,10 @@ def trainer_synapse(args, model, snapshot_path):
                 image_batch, label_batch,weights,_ = sampled_batch[0], sampled_batch[1],sampled_batch[2],sampled_batch[3]
                 image_batch, label_batch,weights = image_batch.cuda(), label_batch.cuda(),weights.cuda()                
             outputs = model(image_batch)
+            label_batch = label_batch.squeeze()
+            loss_skell_recall = component_mse_loss.loss(outputs, label_batch)
+
+            exit()
 #             print(image_batch.shape, outputs.shape,label_batch.shape)
 #             print(outputs.shape,label_batch[:].long().shape,weights,label_batch.shape)
 #             print(weights.shape)
