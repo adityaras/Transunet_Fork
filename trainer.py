@@ -111,6 +111,8 @@ class ComponentMSELoss:
         # Apply softmax to the output
         output = torch.softmax(output, dim=1)
 
+        output = torch.where(output > 0.5, torch.tensor(1.0, device=output.device), torch.tensor(0.0, device=output.device))
+
         print(target.shape, output.shape)
         
         # Count connected components for the entire tensors
