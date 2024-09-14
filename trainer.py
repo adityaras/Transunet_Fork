@@ -103,7 +103,7 @@ class ComponentMSELoss:
         
         # Apply OpenCV's connected components in a batched manner
         batch, height, width = tensor_cpu.shape
-        component_counts = np.zeros((batch), dtype=np.int32)
+        component_counts = np.zeros((batch), dtype=np.float32)
         
         # We avoid loops here by reshaping and applying OpenCV component counting
         for b in range(batch):
