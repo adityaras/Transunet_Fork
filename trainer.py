@@ -101,13 +101,12 @@ class ComponentMSELoss:
         tensor_cpu = tensor.detach().cpu().numpy().astype(np.uint8)
         
         # Apply OpenCV's connected components in a batched manner
-        print(tensor_cpu.shape)
-        batch, channels, height, width = tensor_cpu.shape
+        batch, height, width = tensor_cpu.shape
         component_counts = np.zeros((batch), dtype=np.int32)
         
         # We avoid loops here by reshaping and applying OpenCV component counting
         for b in range(batch):
-            num_components, _ = cv2.connectedComponents(tensor_cpu[b, 1, :, :])
+            num_components, _ = cv2.connectedComponents(tensor_cpu[b, :, :])
             component_counts[b] = num_components
         
         # Convert the NumPy array back to a PyTorch tensor and move to the original device
