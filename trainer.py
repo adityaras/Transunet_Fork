@@ -4,6 +4,7 @@ import os
 import random
 import sys
 import time
+import cv2
 import numpy as np
 import torch
 import torch.nn as nn
