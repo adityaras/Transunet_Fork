@@ -13,7 +13,6 @@ from torch.nn.modules.loss import CrossEntropyLoss
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from utils import DiceLoss
-import torchvision
 from torchvision import transforms
 from datasets.dataset_synapse import Synapse_dataset, RandomGenerator
 from dataloader import LoadData
@@ -98,12 +97,20 @@ class ComponentMSELoss:
         return output_tensor.float()
 
     def _count_connected_components(self, tensor):
-        binary_mask = tensor.float()
-        components = torchvision.ops.connected_components(binary_mask)
-        components = components.flatten(2)  # Flatten height and width dimensions
-        unique_labels = torch.unique(components, dim=2)  # Get unique labels per (Batch, Channel)
-        components_count = (unique_labels != 0).sum(dim=2)  # Count non-zero unique labels
-        return components_count
+        # Move tensor to CPU and convert to NumPy array (batching everything)
+        tensor_cpu = tensor.detach().cpu().numpy().astype(np.uint8)
+        
+        # Apply OpenCV's connected components in a batched manner
+        batch, channels, height, width = tensor_cpu.shape
+        component_counts = np.zeros((batch), dtype=np.int32)
+        
+        # We avoid loops here by reshaping and applying OpenCV component counting
+        for b in range(batch):
+            num_components, _ = cv2.connectedComponents(tensor_cpu[b, 1, :, :])
+            component_counts[b] = num_components
+        
+        # Convert the NumPy array back to a PyTorch tensor and move to the original device
+        return torch.tensor(component_counts, device=tensor.device)
 
     def loss(self, output, target):
         # One-hot encode the target
