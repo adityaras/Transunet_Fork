@@ -101,6 +101,7 @@ class ComponentMSELoss:
         tensor_cpu = tensor.detach().cpu().numpy().astype(np.uint8)
         
         # Apply OpenCV's connected components in a batched manner
+        print(tensor_cpu.shape)
         batch, channels, height, width = tensor_cpu.shape
         component_counts = np.zeros((batch), dtype=np.int32)
         
