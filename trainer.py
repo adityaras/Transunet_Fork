@@ -245,7 +245,7 @@ def trainer_synapse(args, model, snapshot_path):
                 image_batch, label_batch,weights = image_batch.cuda(), label_batch.cuda(),weights.cuda()                
             outputs = model(image_batch)
             label_batch = label_batch.squeeze()
-            loss_skell_recall = component_mse_loss.loss(outputs, label_batch)
+            # loss_skell_recall = component_mse_loss.loss(outputs, label_batch)
 
             # exit()
 #             print(image_batch.shape, outputs.shape,label_batch.shape)
