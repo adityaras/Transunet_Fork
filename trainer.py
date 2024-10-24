@@ -218,7 +218,7 @@ def trainer_synapse(args, model, snapshot_path):
     if args.dilate_skel:
         skel_recall_loss = SkelRecallLoss()
 
-    component_mse_loss = ComponentMSELoss()
+    # component_mse_loss = ComponentMSELoss()
         
     optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay= args.weight_decay)
     if args.adam:
@@ -247,7 +247,7 @@ def trainer_synapse(args, model, snapshot_path):
             label_batch = label_batch.squeeze()
             loss_skell_recall = component_mse_loss.loss(outputs, label_batch)
 
-            exit()
+            # exit()
 #             print(image_batch.shape, outputs.shape,label_batch.shape)
 #             print(outputs.shape,label_batch[:].long().shape,weights,label_batch.shape)
 #             print(weights.shape)
